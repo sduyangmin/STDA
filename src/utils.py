@@ -96,7 +96,7 @@ def get_lapprob_dataloader(datapath, args, batch_size=2, mode='train',fraction=1
     return dataloader
 
 def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fraction, mode='train'):
-    #fraction代表切割天数
+
     datapath = os.path.join(datapath, mode)
     print(datapath)
     cuda = True if torch.cuda.is_available() else False
@@ -105,7 +105,7 @@ def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fractio
     X_data = []
     Y_data = []
     ext_data = []
-    # 加载数据
+
     if "XiAn" in datapath or "ChengDu" or "P1" in datapath :
         print(1)
         X = np.expand_dims(np.load(os.path.join(datapath, 'X.npy')),1) / scaler_X
@@ -117,8 +117,6 @@ def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fractio
         Y = np.load(os.path.join(datapath, 'Y.npy')) / scaler_Y
         ext = np.load(os.path.join(datapath, 'ext_best.npy'))
 
-
-    #构造小样本
     if fraction != None:
         if mode == 'train':
             if "XiAn" in datapath or "ChengDu" in datapath:
@@ -126,7 +124,7 @@ def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fractio
                 Y = Y[:fraction*96]
                 ext = ext[:fraction*96]
 
-            else:#北京
+            else:
                 X = X[:fraction*24]
                 Y = Y[:fraction*24]
                 ext = ext[:fraction*24]
@@ -135,17 +133,15 @@ def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fractio
     print('# {} samples: {}'.format(mode, len(X)))
     print(X.shape)
 
-    # 创建滑动窗口样本
     for i in range(len(X) - seq_len):
-        X_window = X[i:i+seq_len]     # 当前时刻与先前 seq_len 个时刻的图像
-        Y_window = Y[i+seq_len-1]     # 当前时刻的图像
+        X_window = X[i:i+seq_len]     
+        Y_window = Y[i+seq_len-1]     
         ext_window = ext[i:i+seq_len]
 
         X_data.append(X_window)
         Y_data.append(Y_window)
         ext_data.append(ext_window)
 
-    # 将列表转换为张量
     X_data = Tensor(np.array(X_data))
     Y_data = Tensor(np.array(Y_data))
     ext_data = Tensor(np.array(ext_data))
@@ -153,7 +149,6 @@ def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fractio
     print(X_data.shape)
     print(Y_data.shape)
 
-    # 创建数据集和数据加载器
     data = torch.utils.data.TensorDataset(X_data, ext_data, Y_data)
     if mode == 'train':
         dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
@@ -164,7 +159,7 @@ def get_dataloader_st(datapath, scaler_X, scaler_Y, batch_size, seq_len, fractio
 
 
 def get_dataloader_st_baseline(datapath, scaler_X, scaler_Y, batch_size, seq_len, fraction, mode='train'):
-    #fraction代表切割天数
+
     datapath = os.path.join(datapath, mode)
     print(datapath)
     cuda = True if torch.cuda.is_available() else False
@@ -173,7 +168,7 @@ def get_dataloader_st_baseline(datapath, scaler_X, scaler_Y, batch_size, seq_len
     X_data = []
     Y_data = []
     ext_data = []
-    # 加载数据
+
     if "XiAn" in datapath or "ChengDu" or "BeiJing" in datapath :
         print(1)
         X = np.expand_dims(np.load(os.path.join(datapath, 'X.npy')),1) / scaler_X
@@ -184,14 +179,14 @@ def get_dataloader_st_baseline(datapath, scaler_X, scaler_Y, batch_size, seq_len
         X = np.load(os.path.join(datapath, 'X.npy')) / scaler_X
         Y = np.load(os.path.join(datapath, 'Y.npy')) / scaler_Y
         ext = np.load(os.path.join(datapath, 'ext.npy'))
-    #构造小样本
+
     if fraction != None:
         if mode == 'train':
             if "XiAn" in datapath or "ChengDu" in datapath:
                 X = X[:fraction*96]
                 Y = Y[:fraction*96]
                 ext = ext[:fraction*96]
-            else:#北京
+            else:
                 X = X[:fraction*24]
                 Y = Y[:fraction*24]
                 ext = ext[:fraction*24]
@@ -201,17 +196,17 @@ def get_dataloader_st_baseline(datapath, scaler_X, scaler_Y, batch_size, seq_len
     print('# {} samples: {}'.format(mode, len(X)))
     print(X.shape)
 
-    # 创建滑动窗口样本
+
     for i in range(len(X) - seq_len):
-        X_window = X[i:i+seq_len]     # 当前时刻与先前 seq_len 个时刻的图像
-        Y_window = Y[i+seq_len-1]     # 当前时刻的图像
+        X_window = X[i:i+seq_len]     
+        Y_window = Y[i+seq_len-1]    
         ext_window = ext[i:i+seq_len]
 
         X_data.append(X_window)
         Y_data.append(Y_window)
         ext_data.append(ext_window)
 
-    # 将列表转换为张量
+
     X_data = Tensor(np.array(X_data))
     Y_data = Tensor(np.array(Y_data))
     ext_data = Tensor(np.array(ext_data))
@@ -219,7 +214,7 @@ def get_dataloader_st_baseline(datapath, scaler_X, scaler_Y, batch_size, seq_len
     print(X_data.shape)
     print(Y_data.shape)
 
-    # 创建数据集和数据加载器
+
     data = torch.utils.data.TensorDataset(X_data, ext_data, Y_data)
     if mode == 'train':
         dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
@@ -228,22 +223,20 @@ def get_dataloader_st_baseline(datapath, scaler_X, scaler_Y, batch_size, seq_len
     return dataloader
 
 
-def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_city, fraction,transfer_mode, spt_idx,qry_idx): #只生成源城市的数据
-    # datapath: 不包含城市名
+def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_city, fraction,transfer_mode, spt_idx,qry_idx): 
     cuda = True if torch.cuda.is_available() else False
     Tensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 
     cities_current = cities
 
-    X_cities_support = {} #储存城市suopport采样样本
+    X_cities_support = {}
     Y_cities_support = {}
     ext_cities_support = {}
 
-    X_cities_query = {}#储存城市quert采样样本
+    X_cities_query = {}
     Y_cities_query = {}
     ext_cities_query = {}
 
-#####计算目标城市均值分布
     datapath_tc = os.path.join(datapath ,target_city, 'train') 
     # print(datapath_current)
     X_tc = np.expand_dims(np.load(os.path.join(datapath_tc, 'X.npy')), 1) / scaler_X
@@ -258,11 +251,7 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
 
 
 
-
-
-    # random.seed(random_state)
-####### 生成元训练数据
-    for i, city in enumerate(cities_current):# 构建元任务的support set
+    for i, city in enumerate(cities_current):
         datapath_current = os.path.join(datapath ,city, 'train') 
         # print(datapath_current)
         X = np.expand_dims(np.load(os.path.join(datapath_current, 'X.npy')), 1) / scaler_X
@@ -270,10 +259,7 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
         Y = np.expand_dims(np.load(os.path.join(datapath_current, 'Y.npy')), 1) / scaler_Y
         ext = np.load(os.path.join(datapath_current, 'ext.npy'))
         assert len(X) == len(Y)
-
-
-
-    ##计算最佳样本索引
+        
         sample_dict = {}
         if transfer_mode == 'STDA':
             for i in range(X.shape[0] - seq_len):
@@ -285,7 +271,6 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
         else:
             sample_index = [i for i in range(1, X.shape[0] - seq_len)]
 
-    #构造小样本
         X= Tensor(X)
         Y = Tensor(Y)
         ext = Tensor(ext)
@@ -295,12 +280,10 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
             spt_idx=0
         idx = sample_index[spt_idx:spt_idx+spts]
 
-        # 保存样本  
         X_city = []
         Y_city = []
         ext_city = []
         for j in idx:
-            # 取出当前时间步以及前面的 n 个时间步作为一个样本
             X_sample = X[j:j+seq_len]
             Y_sample = Y[j+seq_len-1]
             ext_sample = ext[j:j+seq_len]
@@ -317,16 +300,13 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
         Y_cities_support[city] = Y_city
         ext_cities_support[city] = ext_city
 
-    for i, city in enumerate(cities_current):# 构建元任务的query set
+    for i, city in enumerate(cities_current):
         datapath_current = os.path.join(datapath,city, 'valid') 
         X = np.expand_dims(np.load(os.path.join(datapath_current, 'X.npy')), 1) / scaler_X
         # print(X.shape)
         Y = np.expand_dims(np.load(os.path.join(datapath_current, 'Y.npy')), 1) / scaler_Y
         ext = np.load(os.path.join(datapath_current, 'ext.npy'))
         assert len(X) == len(Y)
-
-
-    ##计算最佳样本索引
         count_t = 0
         count_f = 0
         sample_dict = {}
@@ -342,7 +322,6 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
         else:
             sample_index = [i for i in range(1, X.shape[0] - seq_len)]
 
-    #构造小样本
         X= Tensor(X)
         Y = Tensor(Y)
         ext = Tensor(ext)
@@ -350,14 +329,11 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
         if  qry_idx+qrys > len(sample_index):
             qry_idx=0
         idx = sample_index[qry_idx:qry_idx+qrys]
-
-
-        # 保存样本  
+ 
         X_city = []
         Y_city = []
         ext_city = []
         for j in idx:
-            # 取出当前时间步以及前面的 n 个时间步作为一个样本
             X_sample = X[j:j+seq_len]
             Y_sample = Y[j+seq_len - 1]
             ext_sample = ext[j:j+seq_len]
@@ -377,37 +353,35 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
 
 
     return X_cities_support, Y_cities_support, ext_cities_support, X_cities_query, Y_cities_query, ext_cities_query
-    #返回任务集合
 
 
 
-# 定义 MMD 损失函数
+
+
 def compute_mmd_linear(x, y):
-    # 将两个张量展平为二维矩阵
+
     x_flat = x.view(x.size(0), -1)
     y_flat = y.view(y.size(0), -1)
     
-    # 计算每个样本的均值
+
     x_mean = torch.mean(x_flat, dim=1, keepdim=True)
     y_mean = torch.mean(y_flat, dim=1, keepdim=True)
     
-    # 计算两个分布的协方差
+
     x_cov = torch.matmul(x_flat - x_mean, (x_flat - x_mean).t())
     y_cov = torch.matmul(y_flat - y_mean, (y_flat - y_mean).t())
     
-    # 计算 MMD 损失
+
     mmd_loss = torch.norm(x_cov - y_cov, p='fro')
     
     return mmd_loss
 
-# 计算MMD距离
+
 def compute_mmd_guasssian(x, y, sigma=1.0):
-    # 计算内核矩阵
+
     K_xx = torch.exp(-torch.cdist(x, x, p=2) ** 2 / (2 * sigma ** 2))
     K_yy = torch.exp(-torch.cdist(y, y, p=2) ** 2 / (2 * sigma ** 2))
     K_xy = torch.exp(-torch.cdist(x, y, p=2) ** 2 / (2 * sigma ** 2))
-
-    # 计算MMD
     mmd = K_xx.mean(dim=1) + K_yy.mean(dim=1) - 2 * K_xy.mean(dim=1)
     return mmd
 
@@ -419,7 +393,7 @@ def rsa_loss(region_xs, region_xt, region_ys, region_yt):
     
     hs_x , ht_x = region_xs.shape[1],region_xt.shape[1]
     hs_y , ht_y = region_ys.shape[1],region_yt.shape[1]
-    #对齐网格大小
+
     if ht_x > hs_x:
         region_xt = F.adaptive_avg_pool2d(region_xt,(hs_x,hs_x))
         region_yt = F.adaptive_avg_pool2d(region_yt,(hs_y,hs_y))
@@ -428,7 +402,6 @@ def rsa_loss(region_xs, region_xt, region_ys, region_yt):
         region_xs = F.adaptive_avg_pool2d(region_xs,(ht_x,ht_x))
         region_ys = F.adaptive_avg_pool2d(region_ys,(ht_y,ht_y))
 
-    #将最后的h， w维平铺
     region_xs = region_xs.reshape(region_xs.shape[0], -1)
     region_xt = region_xt.reshape(region_xt.shape[0], -1)
     region_ys = region_ys.reshape(region_ys.shape[0], -1)

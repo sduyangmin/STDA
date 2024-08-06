@@ -2,8 +2,6 @@ import os
 device = '1'
 os.environ["CUDA_VISIBLE_DEVICES"] = device
 import warnings
-
-# 忽略所有类型的警告
 warnings.filterwarnings("ignore")
 import time
 import torch

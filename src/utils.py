@@ -244,7 +244,7 @@ def get_task(datapath, cities, scaler_X, scaler_Y, spts, qrys, seq_len, target_c
     if "XiAn" in datapath or "ChengDu" in datapath:
         X_tc = X_tc[:fraction*96]
 
-    else:#北京
+    else:
         X_tc = X_tc[:fraction*24]
 
     mean_target_X = np.mean(X_tc)

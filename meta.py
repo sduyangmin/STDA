@@ -18,9 +18,9 @@ class STMAML(nn.Module):
         super(STMAML, self).__init__()
         self.args = args
 
-        self.source_update_lr = args.source_lr #源任务内部学习率
-        self.target_update_lr = args.target_lr #源任务内部学习率
-        self.meta_lr = args.meta_lr     #调整初始化参数用的学习率
+        self.source_update_lr = args.source_lr
+        self.target_update_lr = args.target_lr 
+        self.meta_lr = args.meta_lr    
 
 
         self.update_step = args.source_train_update_steps
@@ -60,18 +60,18 @@ class STMAML(nn.Module):
         print_model_parm_nums(self.model, model_name)
         print(self.args.transfer_method)
 
-        self.meta_optim = optim.Adam(filter(lambda p: p.requires_grad,self.model.parameters()), lr=self.meta_lr)#定义元学习优化器
-        self.loss_criterion = nn.MSELoss()# 定义元学习损失函数
+        self.meta_optim = optim.Adam(filter(lambda p: p.requires_grad,self.model.parameters()), lr=self.meta_lr)
+        self.loss_criterion = nn.MSELoss()
         self.model.train()
 
-    def meta_train_STDA(self, x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry,x_sptt, y_sptt, ext_sptt): # 更新元学习器参数 返回元学习器在元训练任务的测试集上的损失
+    def meta_train_STDA(self, x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry,x_sptt, y_sptt, ext_sptt): 
 
         meta_param = self.model.state_dict()
         gradient = {name : 0 for name in meta_param}
         beta = self.args.beta
         for j in self.source_cities:
-            learner = copy.deepcopy(self.model) # 第一次copy 用来计算更新初始化参数所需的方向
-            optim = torch.optim.Adam(learner.parameters(), lr = self.source_update_lr) # 训练任务的优化器和学习率
+            learner = copy.deepcopy(self.model) 
+            optim = torch.optim.Adam(learner.parameters(), lr = self.source_update_lr) 
             learner.train()
 
             #train each task for learner
@@ -101,15 +101,15 @@ class STMAML(nn.Module):
 
         return  loss.detach().cpu().numpy()
     
-    def meta_train_MAML(self, x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry): # 更新元学习器参数 返回元学习器在元训练任务的测试集上的损失
+    def meta_train_MAML(self, x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry): 
 
 
         meta_param = self.model.state_dict()
         gradient = {name : 0 for name in meta_param}
         
         for j in self.source_cities:
-            learner = copy.deepcopy(self.model) # 第一次copy 用来计算更新初始化参数所需的方向
-            optim = torch.optim.Adam(learner.parameters(), lr = self.source_update_lr) # 训练任务的优化器和学习率
+            learner = copy.deepcopy(self.model) 
+            optim = torch.optim.Adam(learner.parameters(), lr = self.source_update_lr) 
             learner.train()
             
             #train each task for learner

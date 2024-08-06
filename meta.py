@@ -14,7 +14,7 @@ class STMAML(nn.Module):
     """
     MAML-based Few-sample learning architecture 
     """
-    def __init__(self, args,model_name='UrbanFM_conv'):
+    def __init__(self, args,model_name='STDA'):
         super(STMAML, self).__init__()
         self.args = args
 

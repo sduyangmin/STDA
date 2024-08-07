@@ -345,8 +345,8 @@ class STDA(nn.Module):
         self.adaptive_pool = nn.AdaptiveAvgPool2d((16, 16))
         self.mu_T = torch.tensor(np.load('./datasets/statistics/' + args.tar_city[0]+ str(args.fraction)+ '.npy')).to(self.meta_conv.weight.device)
 
-        self.city_level_model = ConvLSTM(1, self.C_1, (3,3), 1, True, True, False)
-        self.region_level_model = regionalFI_model(self.C_2 * (sub_region ** 2), 
+        self.inter_region_model = ConvLSTM(1, self.C_1, (3,3), 1, True, True, False)
+        self.intra_region_model = regionalFI_model(self.C_2 * (sub_region ** 2), 
                             self.scale_factor, 1 * (sub_region **2), 3, 1, sub_region **2)
 
         self.relu = nn.ReLU()
@@ -378,14 +378,14 @@ class STDA(nn.Module):
 
         ##ST-learner with adaptive kernel
         #city_level spatio-temporal learning
-        _, last_states = self.city_level_model(x, meta_info,meta_info_offset)
+        _, last_states = self.inter_region_model(x, meta_info,meta_info_offset)
         hidden_state = last_states[0][0]  # H_t in paper
 
         #region-level fine-grained inference and cross-city normalization
         patchs_c = rearrange(save_x + hidden_state, 'b c (ph h) (pw w) -> b (ph pw c) h w', 
                                     ph= self.sub_region, pw= self.sub_region)
     
-        F_norm = self.region_level_model(patchs_c,ssta = mu_k, tsta = self.mu_T)
+        F_norm = self.intra_region_model(patchs_c,ssta = mu_k, tsta = self.mu_T)
 
         #ST-decoder
         F_norm_combine = rearrange(F_norm , 'b (ph pw c) h w -> b c (ph h) (pw w)', 

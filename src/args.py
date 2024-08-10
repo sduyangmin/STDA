@@ -73,7 +73,7 @@ def get_args():
                         help='days for few-sample adaptation')
     parser.add_argument('--transfer_method', type=str, default='STDA',
                         help='chose transfer method to use',
-                        choices=['STDA', 'MAML'])
+                        choices=['STDA'])
     
     
     #data args

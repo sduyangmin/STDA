@@ -100,42 +100,6 @@ class STMAML(nn.Module):
         torch.save(state, '{}/best_epoch.pt'.format(self.meta_model_path))
 
         return  loss.detach().cpu().numpy()
-    
-    def meta_train_MAML(self, x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry): 
-
-
-        meta_param = self.model.state_dict()
-        gradient = {name : 0 for name in meta_param}
-        
-        for j in self.source_cities:
-            learner = copy.deepcopy(self.model) 
-            optim = torch.optim.Adam(learner.parameters(), lr = self.source_update_lr) 
-            learner.train()
-            
-            #train each task for learner
-            for k in range(self.update_step):
-            
-                if self.args.model == 'STDA':
-                    score,region_xs,region_ys = learner(x_spt[j])
-                else:
-                    score,region_xs,region_ys = learner(x_spt[j],ext_spt[j])
-
-                loss = self.loss_criterion(score * self.args.scaler_Y , y_spt[j]* self.args.scaler_Y) 
-                    
-                optim.zero_grad()
-                loss.backward()
-                optim.step()            
-            
-            #Theta = Theta + epsilon * (1/batch size) * sigma(W - Theta), Equation in paper 
-            learner_param = learner.state_dict()
-            for name in gradient:
-                gradient[name] = gradient[name] + (learner_param[name] - meta_param[name])
-                
-        self.model.load_state_dict(({name : meta_param[name] + self.args.meta_lr * (gradient[name] / self.args.task_num) for name in meta_param}))
-        state = {'model_state_dict': self.model.state_dict(), 'optimizer': self.meta_optim.state_dict()}
-
-        torch.save(state, '{}/best_epoch.pt'.format(self.meta_model_path))
-        return  loss.detach().cpu().numpy()
     def forward(self, x):
         out = self.model(x)
         return out

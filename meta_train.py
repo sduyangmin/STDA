@@ -51,9 +51,7 @@ if __name__ == '__main__':
         if x_sptt.shape[0] != args.source_spt_size:
             x_sptt,ext_sptt, y_sptt = next(dataloder_target)
 
-        if args.transfer_method == 'MAML':
-            loss = model.meta_train_MAML(x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry)
-        elif args.transfer_method == 'STDA':
+        if args.transfer_method == 'STDA':
             loss = model.meta_train_STDA(x_spt, y_spt, ext_spt, x_qry, y_qry, ext_qry,x_sptt, y_sptt,ext_sptt)
 
         end_time = time.time()

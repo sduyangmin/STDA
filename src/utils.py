@@ -406,8 +406,9 @@ def rsa_loss(region_xs, region_xt, region_ys, region_yt):
     region_xt = region_xt.reshape(region_xt.shape[0], -1)
     region_ys = region_ys.reshape(region_ys.shape[0], -1)
     region_yt = region_yt.reshape(region_yt.shape[0], -1)
-
+    
     w = compute_mmd_linear(region_xs, region_xt)
+    w = torch.reciprocal(w)
     y_diff = compute_mmd_linear(region_ys, region_yt)
     loss = torch.sum(w * y_diff)
     return loss

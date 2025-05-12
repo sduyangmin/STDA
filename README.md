@@ -38,4 +38,14 @@ python few_sample_adaptation.py --model=STDA --rec_cities=['XiAn','ChengDu'] --t
 
 
 ## 📜 Citation
+@ARTICLE{10980031,
+  author={Yang, Min and Li, Xiaoyu and Xu, Bin and Nie, Xiushan and Zhao, Muming and Zhang, Chengqi and Zheng, Yu and Gong, Yongshun},
+  journal={IEEE Transactions on Knowledge and Data Engineering}, 
+  title={STDA: Spatio-Temporal Deviation Alignment Learning for Cross-city Fine-grained Urban Flow Inference}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-13},
+  keywords={Urban areas;Feature extraction;Roads;Training;Spatiotemporal phenomena;Adaptation models;Accuracy;Transformers;Representation learning;Predictive models;Spatio-temporal data mining;cross-city transfer learning;fine-grained urban flow inference},
+  doi={10.1109/TKDE.2025.3565504}}
  
